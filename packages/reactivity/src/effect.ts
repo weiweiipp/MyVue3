@@ -18,6 +18,8 @@ export let activeEffect;
 class ReactiveEffect {
     // 用于记录当前effect执行了几次
     _trackId = 0;
+    deps = [];
+    _depsLength = 0;
     // 创建的effect是响应式的
     public active = true;
     // fn用户编写的函数
@@ -43,7 +45,19 @@ class ReactiveEffect {
     }
 }
 
-
+// 双向记忆，effect和dep关联起来
 export function trackEffect(effect, dep) {
+    // 收集器记录了effect
     dep.set(effect, effect._trackId)
+    // effect的deps数组记录收集器，
+    effect.deps[effect._depsLength++] = dep;
+}
+
+
+export function triggerEffects(dep){
+    for(const effect of dep.keys()){
+        if(effect.scheduler){
+            effect.scheduler() 
+        }
+    }
 }

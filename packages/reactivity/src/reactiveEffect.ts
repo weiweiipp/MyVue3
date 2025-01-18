@@ -1,4 +1,4 @@
-import { activeEffect, trackEffect } from "./effect";
+import { activeEffect, trackEffect, triggerEffects } from "./effect";
 
 const targetMap = new WeakMap();
 
@@ -31,4 +31,17 @@ export function track(target, key) {
         trackEffect(activeEffect, dep)
         console.log(targetMap);
     }
+}
+
+
+export function trigger(target,key,newValue,oldValue){
+   const  depsMap =  targetMap.get(target)
+   if(!depsMap){
+    return
+   }
+   let dep = depsMap.get(key);
+   if(dep){
+        // 修改的属性对应了更新
+        triggerEffects(dep)
+   }
 }
